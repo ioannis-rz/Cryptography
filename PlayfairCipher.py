@@ -1,13 +1,5 @@
 import string
 
-def encrypt(key, message):
-  key = KEY.lower()
-  message = message.lower()
-  encryptedMessage = ""
-  table = generateMatrix(key,5)
-
-  return encryptedMessage
-
 def generateMatrix(key):
   keyMatrix = [
               [],
@@ -45,16 +37,25 @@ def generateMatrix(key):
       characters.remove('i')
       break
 
-  print(characters)
-
   for i in range(5):
     keyMatrix[i] = characters[5*i:(5*i)+5]
 
   return keyMatrix
 
+def encrypt(key, message):
+  key = key.lower()
+  matrix = generateMatrix(key)
+  print(matrix)
+  print(matrix[0][0])
+  message = message.lower()
+  encryptedMessage = ""
+  table = generateMatrix(key)
+
+  return encryptedMessage
+
 def decrypt(key, encryptedMessage):
   decryptedMessage = ""
   return decryptedMessage
 
-## test bench
-print(generateMatrix("YoanPinzon"))
+# test bench
+encrypt("YoanPinzon", "OU RF RI EN DF RO MP AR IS")
