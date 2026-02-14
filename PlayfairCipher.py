@@ -1,7 +1,8 @@
 import string
 
 def encrypt(key, message):
-  key = ""
+  key = KEY.lower()
+  message = message.lower()
   encryptedMessage = ""
   table = generateMatrix(key,5)
 
@@ -15,6 +16,7 @@ def generateMatrix(key):
               [],
               []
               ]
+
   key = list(key.lower())
   characters = list(string.ascii_lowercase)
   temp1 = len(key)
@@ -31,18 +33,22 @@ def generateMatrix(key):
   for i in range(temp):
     key.remove(0)
 
-  keySize = len(key)
-  print(keySize)
-  temp = 5
-  temp1 = 0
+  characters = key + characters
 
-  for i in range(keySize//5 + keySize%5 + 1):
-    keyMatrix[i] = list(key[temp1:temp])
-    temp1 += 5
-    temp += 5
-  for i in range(keySize//5 + keySize%5, 5):
-    keyMatrix[i] = list(characters[0:5])
+  for i in range(26):
+    if characters[i] == 'i':
+      characters[i] = 'ij'
+      characters.remove('j')
+      break
+    elif characters[i] == 'j':
+      characters[i] = 'ij'
+      characters.remove('i')
+      break
 
+  print(characters)
+
+  for i in range(5):
+    keyMatrix[i] = characters[5*i:(5*i)+5]
 
   return keyMatrix
 
