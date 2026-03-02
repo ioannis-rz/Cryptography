@@ -1,12 +1,14 @@
 import numpy as np
 import re
 
+ALPHABET_SIZE = 26
+
 def decryptHill(key: np.array, ciphertext: str):
     cleartext=""
-    keyInv = inverseModular(key, 26)
+    keyInv = inverseModular(key, ALPHABET_SIZE)
     for i in range(0, len(ciphertext), 2):
         temp = np.array([ord(ciphertext[i]) - ord('a'), ord(ciphertext[i+1]) - ord('a')])
-        temp = np.matmul(temp,keyInv) % 26
+        temp = np.matmul(temp,keyInv) % ALPHABET_SIZE
         cleartext += chr(temp[0] + ord('a')) + chr(temp[1] + ord('a'))
     return cleartext
 
@@ -17,7 +19,7 @@ def encryptHill(key: np.array, cleartext: str):
     ciphertext = ""
     for i in range(0, len(cleartext), 2):
         temp = np.array([ord(cleartext[i]) - ord('a'), ord(cleartext[i+1]) - ord('a')])
-        temp = np.matmul(temp,key) % 26
+        temp = np.matmul(temp,key) % ALPHABET_SIZE
         ciphertext += chr(temp[0] + ord('a')) + chr(temp[1] + ord('a'))
     return ciphertext
 
@@ -52,13 +54,11 @@ def eea(a: int, b: int):
 def inverseModular(matrix: np.array, mod: int):
     if not hasInverse(matrix):
         raise Exception("La matriz no tiene inversa")
-    
     mat = adjunta(matrix)
-    print("Adjunta:\n" + str(mat))
     return (mat * eea(det(matrix), mod)[1]) % mod
 
-test2 = np.array([[11,8],[3,7]])
-text = "JULY"
+test2 = np.array([[3,7],[5,12]])
+text = "Herbert Yardley wrote The American Black Chamber"
 cipher = encryptHill(test2, text)
 #print(adjunta(test2))
 #print(det(test2))
