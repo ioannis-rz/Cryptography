@@ -27,6 +27,9 @@ string decrypt(string ciphertext, string key) {
 
 int main()
 {
+
+    short key[26][25];
+
     string cleartext = "Crypto is fun";
     string key = "relations ";
 
