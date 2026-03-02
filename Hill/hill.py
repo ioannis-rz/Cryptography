@@ -5,6 +5,9 @@ ALPHABET_SIZE = 26
 
 def decryptHill(key: np.array, ciphertext: str):
     cleartext=""
+    ciphertext = re.sub("[^A-Za-z]", "", ciphertext).lower()
+    if len(ciphertext) % 2 != 0:
+        ciphertext += 'x'
     keyInv = inverseModular(key, ALPHABET_SIZE)
     for i in range(0, len(ciphertext), 2):
         temp = np.array([ord(ciphertext[i]) - ord('a'), ord(ciphertext[i+1]) - ord('a')])
@@ -13,10 +16,10 @@ def decryptHill(key: np.array, ciphertext: str):
     return cleartext
 
 def encryptHill(key: np.array, cleartext: str):
+    ciphertext = ""
     cleartext = re.sub("[^A-Za-z]", "", cleartext).lower()
     if len(cleartext) % 2 != 0:
         cleartext += 'x'
-    ciphertext = ""
     for i in range(0, len(cleartext), 2):
         temp = np.array([ord(cleartext[i]) - ord('a'), ord(cleartext[i+1]) - ord('a')])
         temp = np.matmul(temp,key) % ALPHABET_SIZE
@@ -28,7 +31,7 @@ def det(matrix: np.array):
         raise Exception("Matriz debe tener tamaño 2x2")
     return matrix[0][0]*matrix[1][1] - matrix[0][1]*matrix[1][0]
 
-def adjunta(matrix: np.array):
+def adj(matrix: np.array):
     if (matrix.shape != (2,2)):
         raise Exception("Matriz debe tener tamaño 2x2")
     adjMatrix = matrix.copy()
@@ -54,8 +57,12 @@ def eea(a: int, b: int):
 def inverseModular(matrix: np.array, mod: int):
     if not hasInverse(matrix):
         raise Exception("La matriz no tiene inversa")
-    mat = adjunta(matrix)
-    return (mat * eea(det(matrix), mod)[1]) % mod
+    mat = adj(matrix)
+    eeaResult = eea(det(matrix), mod)
+    if eeaResult[0] != 1:
+        raise Exception("La matriz no tiene inversa modular")
+    
+    return (mat * eeaResult[1]) % mod
 
 test2 = np.array([[3,7],[5,12]])
 text = "Herbert Yardley wrote The American Black Chamber"
