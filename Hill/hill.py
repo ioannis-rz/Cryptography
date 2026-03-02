@@ -1,26 +1,20 @@
 import numpy as np
 
-def hill(key, cyphertext):
+def decryptHill(key, cyphertext):
     cleartext=""
     return cleartext
 
-def hill(key, cleartext):
+def encryptHill(key, cleartext):
     cyphertext = ""
     return cyphertext
-
-def det(matrix: np.array):
-    det = np.linalg.det(matrix)
-    return det
 
 def hasInverse(matrix: np.array):
     if (matrix.shape != (2,2)):
         raise Exception("Matrix size must be 2x2")
-    if (det(matrix) != 0):
+    if (int(np.linalg.det(matrix)) != 0):
         return True
     else: return False
 
-test2 = np.array([[2,1],[1,1]])
-test = np.zeros((2,2), dtype=int)
-print(det(test2))
-
+test2 = np.array([[11,8],[3,7]])
+print(int(np.linalg.det(test2)))
 print(hasInverse(test2))
