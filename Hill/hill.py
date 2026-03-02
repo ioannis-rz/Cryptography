@@ -31,12 +31,12 @@ def det(matrix: np.array):
 def adjunta(matrix: np.array):
     if (matrix.shape != (2,2)):
         raise Exception("Matriz debe tener tamaño 2x2")
-    temp = matrix[0][0]
-    matrix[0][0] = matrix[1][1]
-    matrix[1][1] = temp
-    matrix[0][1] = -matrix[0][1]
-    matrix[1][0] = -matrix[1][0]
-    return matrix
+    adjMatrix = np.array([[3,7],[5,12]])
+    adjMatrix[0][0] = matrix[1][1]
+    adjMatrix[1][1] = matrix[0][0]
+    adjMatrix[0][1] = -matrix[0][1]
+    adjMatrix[1][0] = -matrix[1][0]
+    return adjMatrix
 
 def hasInverse(matrix: np.array):
     if (det(matrix) != 0):
