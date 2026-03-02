@@ -31,7 +31,7 @@ def det(matrix: np.array):
 def adjunta(matrix: np.array):
     if (matrix.shape != (2,2)):
         raise Exception("Matriz debe tener tamaño 2x2")
-    adjMatrix = np.array([[3,7],[5,12]])
+    adjMatrix = matrix.copy()
     adjMatrix[0][0] = matrix[1][1]
     adjMatrix[1][1] = matrix[0][0]
     adjMatrix[0][1] = -matrix[0][1]
