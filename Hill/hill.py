@@ -1,12 +1,20 @@
 import numpy as np
+import re
 
-def decryptHill(key, cyphertext):
+def decryptHill(key: np.array, ciphertext: str):
     cleartext=""
     return cleartext
 
-def encryptHill(key, cleartext):
-    cyphertext = ""
-    return cyphertext
+def encryptHill(key: np.array, cleartext: str):
+    cleartext = re.sub("[^A-Za-z]", "", cleartext).lower()
+    if len(cleartext) % 2 != 0:
+        cleartext += 'x'
+    ciphertext = ""
+    for i in range(0, len(cleartext), 2):
+        temp = np.array([ord(cleartext[i]) - ord('a'), ord(cleartext[i+1]) - ord('a')])
+        temp = np.matmul(temp,key) % 26
+        ciphertext += chr(temp[0] + ord('a')) + chr(temp[1] + ord('a'))
+    return ciphertext
 
 def hasInverse(matrix: np.array):
     if (matrix.shape != (2,2)):
@@ -16,5 +24,6 @@ def hasInverse(matrix: np.array):
     else: return False
 
 test2 = np.array([[11,8],[3,7]])
-print(int(np.linalg.det(test2)))
-print(hasInverse(test2))
+text = "JULY"
+cipher = encryptHill(test2, text)
+print(cipher)
