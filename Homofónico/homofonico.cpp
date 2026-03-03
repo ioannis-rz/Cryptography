@@ -1,20 +1,34 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
 #include <vector>
+#include <algorithm>
+#include <random>
 
 using namespace std;
 
+int TABLE_SIZE = 100;
+
 template <typename T>
-void printVector(vector<T> vector1) {
+void printVector(const vector<T>& vector1) {
     for (long unsigned int i = 0; i < vector1.size(); i++) {
         cout << vector1[i] << " ";
     }
     cout << endl;
 }
+template <typename T>
+void printVector(const vector<vector<T>>& vector1) {
+    for (long unsigned int i = 0; i < vector1.size(); i++) {
+        for (long unsigned int j = 0; j < vector1[i].size(); j++) {
+            cout << vector1[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
 
 string fixText(string text){
-    //text.tolower()
+    for (int i = 0; i < text.length(); i++){
+        text.at(i) = tolower(text.at(i));
+    }
     text.erase(
         remove_if(text.begin(), text.end(), [](char x) {
             return (x > 'z' || x < 'a');
@@ -23,47 +37,38 @@ string fixText(string text){
     return text;
 }
 
-vector<char> encriptionKey(vector<short> encTable[26]) {
-    vector<char> decTable(100);
+vector<char> arrangeKey(const vector<vector<short>>& encTable) {
+    vector<char> decTable(TABLE_SIZE);
     char c;
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < encTable.size(); i++) {
         c = (char)i+'a';
         // cout << encTable[i].size() << " ";
-        for (int j = 0; j < encTable[i].size(); j++) {
+        for (long unsigned int j = 0; j < encTable[i].size(); j++) {
             decTable[encTable[i][j]] = c;
         }
-        // cout << c << endl;
     }
-    // printVector(decTable);
     return decTable;
 }
 
-vector<short> encrypt(string cleartext, vector<short> encTable[26]) {
+vector<short> encrypt(string cleartext, const vector<vector<short>>& encTable, mt19937& gen) {
     cleartext = fixText(cleartext);
-    // cout << cleartext << endl;
     int sizeMessage = cleartext.size();
-    int randomNumber, possibleEncryptions;
     short letter;
     vector<short> ciphertext(sizeMessage);
+    uniform_int_distribution<> dis;
 
-    srand(time(nullptr));
-    for (unsigned int i = 0; i < sizeMessage; i++) {
+    for (int i = 0; i < sizeMessage; i++) {
         letter = cleartext.at(i) - 'a';
-        randomNumber = rand();
-        possibleEncryptions = encTable[letter].size();
-        while (randomNumber < 0) {
-            randomNumber = randomNumber + possibleEncryptions;
-        }
-        randomNumber = randomNumber % possibleEncryptions;
-        ciphertext[i] = encTable[letter][randomNumber];
+        dis.param(uniform_int_distribution<>::param_type(0, encTable[letter].size() - 1)); // distribucion uniforme en el rango de numeros posibles
+        ciphertext[i] = encTable[letter][dis(gen)];
     }
     return ciphertext;
 }
 
-string decrypt(vector<short> ciphertext, vector<short> encTable[26]) {
+string decrypt(const vector<short>& ciphertext, const vector<vector<short>>& encTable) {
     string cleartext = "";
     int sizeMessage = ciphertext.size();
-    vector<char> decTable = encriptionKey(encTable);
+    vector<char> decTable = arrangeKey(encTable);
     for (int i = 0; i < sizeMessage; i++) {
         cleartext += decTable[ciphertext[i]];
     }
@@ -73,7 +78,7 @@ string decrypt(vector<short> ciphertext, vector<short> encTable[26]) {
 int main()
 {
     // vector con la tabla para encriptar
-    std::vector<short> encTable[26];
+    std::vector<vector<short>> encTable(26);
     encTable[0] = {9, 12, 33, 47, 53, 67, 78, 92};
     encTable[1] = {48, 81};
     encTable[2] = {13, 41, 62};
@@ -101,14 +106,29 @@ int main()
     encTable[24] = {21, 52};
     encTable[25] = {2};
 
-    string cleartext = "crypto is fun";
+    // 1. Seed (true random source)
+    random_device rd;
+
+    // 2. Engine (pseudo-random generator)
+    mt19937 gen(rd());  // Mersenne Twister (excellent quality)
+
+    //printVector(encTable);
+    string cleartext = "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG";
 
     cout << "Text: " << cleartext << endl;
-    vector<short> ciphertext = encrypt(cleartext, encTable);
+    vector<short> ciphertext = encrypt(cleartext, encTable, gen);
     cout << "Ciphertext: ";
     printVector(ciphertext);
 
     cleartext = decrypt(ciphertext, encTable);
     cout << "Cleartext: " << cleartext << endl;
+
+    vector<short> test1 = {62, 40, 21, 95, 69, 90, 32, 19, 31, 61, 91};
+    cleartext = decrypt(test1, encTable);
+    cout << "Test1: " << cleartext << endl;
+
+    vector<short> test2 = {13 ,5 ,26 ,0 ,22 ,81 ,88 , 47};
+    cleartext = decrypt(test2, encTable);
+    cout << "Test2: " << cleartext << endl;
     return 0;
 }
