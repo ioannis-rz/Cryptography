@@ -6,41 +6,40 @@
 
 using namespace std;
 
-int TABLE_SIZE = 100;
+constexpr int TABLE_SIZE = 100;
 
 template <typename T>
 void printVector(const vector<T>& vector1) {
-    for (long unsigned int i = 0; i < vector1.size(); i++) {
-        cout << vector1[i] << " ";
+    for (T item : vector1) {
+        cout << item << " ";
     }
     cout << endl;
 }
 template <typename T>
-void printVector(const vector<vector<T>>& vector1) {
-    for (long unsigned int i = 0; i < vector1.size(); i++) {
-        for (long unsigned int j = 0; j < vector1[i].size(); j++) {
-            cout << vector1[i][j] << " ";
+void print2DVector(const vector<vector<T>>& vector1) {
+    for (size_t i = 0; i < vector1.size(); i++) {
+        for (T item : vector1[i]) {
+            cout << item << " ";
         }
         cout << endl;
     }
 }
 
 string fixText(string text){
-    for (int i = 0; i < text.length(); i++){
-        text.at(i) = tolower(text.at(i));
+    string result = "";
+    for (char ch : text) {
+        ch = tolower(ch);
+        if (ch >= 'a' && ch <= 'z') {
+            result += ch;
+        }
     }
-    text.erase(
-        remove_if(text.begin(), text.end(), [](char x) {
-            return (x > 'z' || x < 'a');
-        }), text.end()
-    );
-    return text;
+    return result;
 }
 
-vector<char> arrangeKey(const vector<vector<short>>& encTable) {
+vector<char> buildDecTable(const vector<vector<short>>& encTable) {
     vector<char> decTable(TABLE_SIZE);
     char c;
-    for (int i = 0; i < encTable.size(); i++) {
+    for (size_t i = 0; i < encTable.size(); i++) {
         c = (char)i+'a';
         // cout << encTable[i].size() << " ";
         for (long unsigned int j = 0; j < encTable[i].size(); j++) {
@@ -65,10 +64,9 @@ vector<short> encrypt(string cleartext, const vector<vector<short>>& encTable, m
     return ciphertext;
 }
 
-string decrypt(const vector<short>& ciphertext, const vector<vector<short>>& encTable) {
+string decrypt(const vector<short>& ciphertext, const vector<char>& decTable) {
     string cleartext = "";
     int sizeMessage = ciphertext.size();
-    vector<char> decTable = arrangeKey(encTable);
     for (int i = 0; i < sizeMessage; i++) {
         cleartext += decTable[ciphertext[i]];
     }
@@ -106,29 +104,30 @@ int main()
     encTable[24] = {21, 52};
     encTable[25] = {2};
 
-    // 1. Seed (true random source)
-    random_device rd;
+    //print2DVector(encTable);
+    vector<char> decTable = buildDecTable(encTable);
+    //printVector(decTable);
 
-    // 2. Engine (pseudo-random generator)
-    mt19937 gen(rd());  // Mersenne Twister (excellent quality)
+    // gestionar genracion de # aleatorios
+    random_device rd; // seed
+    mt19937 gen(rd());  // random
 
-    //printVector(encTable);
+    // pruebas
     string cleartext = "THE QUICK BROWN FOX JUMPS OVER THE LAZY DOG";
 
     cout << "Text: " << cleartext << endl;
     vector<short> ciphertext = encrypt(cleartext, encTable, gen);
     cout << "Ciphertext: ";
     printVector(ciphertext);
-
-    cleartext = decrypt(ciphertext, encTable);
+    cleartext = decrypt(ciphertext, decTable);
     cout << "Cleartext: " << cleartext << endl;
 
     vector<short> test1 = {62, 40, 21, 95, 69, 90, 32, 19, 31, 61, 91};
-    cleartext = decrypt(test1, encTable);
+    cleartext = decrypt(test1, decTable);
     cout << "Test1: " << cleartext << endl;
 
     vector<short> test2 = {13 ,5 ,26 ,0 ,22 ,81 ,88 , 47};
-    cleartext = decrypt(test2, encTable);
+    cleartext = decrypt(test2, decTable);
     cout << "Test2: " << cleartext << endl;
     return 0;
 }
