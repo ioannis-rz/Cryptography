@@ -62,7 +62,11 @@ vector<short> encrypt(string cleartext, vector<short> encTable[26]) {
 
 string decrypt(vector<short> ciphertext, vector<short> encTable[26]) {
     string cleartext = "";
-    encriptionKey(encTable);
+    sizeMessage = ciphertext.size();
+    decTable = encriptionKey(encTable);
+    for (int i = 0; i < sizeMessage; i++) {
+        cleartext += decTable[i];
+    }
     return cleartext;
 }
 
