@@ -34,8 +34,6 @@ def encryptHill(key: np.array, cleartext: str):
         ciphertext += chr(temp[0] + ord('a')) + chr(temp[1] + ord('a'))
     return ciphertext
 
-
-
 def det(matrix: np.array):
     if (matrix.shape != (2,2)):
         raise ValueError("Matriz debe tener tamaño 2x2")
@@ -71,7 +69,6 @@ def inverseModular(matrix: np.array, mod: int):
         raise ValueError("Matriz no tiene inversa modular")
     mat = adj(matrix)
     return (mat * eeaResult[1]) % mod
-
 
 test2 = np.array([[11,8],[3,7]])
 text = "JULY"
