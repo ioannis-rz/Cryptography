@@ -6,6 +6,7 @@ using namespace std;
 
 constexpr bool LEFT = true;
 constexpr bool RIGHT = false;
+constexpr char PLACEHOLDER = '#';
 
 template <typename T>
 void print2DArr(T* ptr, int sizeRow, int sizeCol) {
@@ -31,9 +32,20 @@ void printVector(const vector<T>& vector1) {
     cout << endl;
 }
 
-vector<int> rotate(vector<int>& holes, bool rotDirection, int sizeMatrix){
-    // printVector(holes);
-    for (int& num : holes){
+string fixText(string text){
+    string result = "";
+    for (char ch : text) {
+        ch = tolower(ch);
+        if (ch >= 'a' && ch <= 'z') {
+            result += ch;
+        }
+    }
+    return result;
+}
+
+void rotate(vector<int>& cutouts, bool rotDirection, int sizeMatrix){
+    // printVector(cutouts);
+    for (int& num : cutouts){
         int row = num / sizeMatrix; // size es dimension n de la matrix
         int col = num % sizeMatrix;
         int newNum;
@@ -44,65 +56,70 @@ vector<int> rotate(vector<int>& holes, bool rotDirection, int sizeMatrix){
         }
         num = newNum;
     }
-    sort(holes.begin(),holes.end());
-    //printVector(holes);
-    return holes;
+    sort(cutouts.begin(),cutouts.end());
+    //printVector(cutouts);
 }
 
-string encrypt(string cleartext, bool rotDirection, int size, vector<int> holes){
-    char* ciphertext = new char[(size*size)+1];
-    ciphertext[size*size] = '\0';
-    
-    for (int i = 0; i < size*size; i++) {
-        ciphertext[i] = 'x';
+bool validateCutouts(vector<int> cutouts, int size) {
+    if (cutouts.size()*4 != size*size) { return false; }
+
+    vector<short> count(size*size,0);
+    for (int i = 0; i < 4; i++){
+        for (int num : cutouts) {
+            if (num >= size*size || num < 0) { return false; }
+            count[num] = count[num] + 1;
+            if (count[num] > 1) { return false; }
+        }
+        rotate(cutouts, LEFT, size);
     }
+    return true;
+}
+
+string encrypt(string cleartext, bool rotDirection, int size, vector<int> cutouts){
+    if (!validateCutouts(cutouts, size)) {
+        throw runtime_error("La llave no es valida");
+    }
+    
+    cleartext = fixText(cleartext);
+    string ciphertext(size*size, PLACEHOLDER);
     
     int i = 0;
     int j = 0;
     while (i < cleartext.size()) {  // realizar para todas las letras del texto claro
-        if ((i % holes.size() == 0) && i!=0){           // rotar cada 4 iteraciones
-            holes = rotate(holes, rotDirection, size);   // rotar la matriz = cambiar los huecos
+        if ((i % cutouts.size() == 0) && i!=0){           // rotar cada 4 iteraciones
+            rotate(cutouts, rotDirection, size);   // rotar la matriz = cambiar los huecos
             //cout << "Matriz rotada, nuevos huecos en ";
-            //printVector(holes);
+            //printVector(cutouts);
             //cout << i << endl;
-            j = 0;                  // resetear posicion inicial para holes
+            j = 0;                  // resetear posicion inicial para cutouts
         }
-        // colocar en posicion del texto cifrado (holes) el caracter del texto claro
-        ciphertext[holes[j]] = cleartext.at(i); // quiza sea necesario hacer una verificacion apra esto
+        // colocar en posicion del texto cifrado (cutouts) el caracter del texto claro
+        ciphertext[cutouts[j]] = cleartext.at(i); // quiza sea necesario hacer una verificacion apra esto
         //printArr(ciphertext, size*size+1);
         i++;
         j++;
     }
-
-    // printArr(ciphertext, size*size);
-    string s = ciphertext;
-    return s;
+    return ciphertext;
 }
 
-string decrypt(string ciphertext, bool rotDirection, int size, vector<int> holes){
-    char* cleartext = new char[(size*size)+1];
-    cleartext[size*size] = '\0';            // null terminator
-    for (int i = 0; i < size*size; i++) {   // inicializar arreglo
-        cleartext[i] = 'x';
+string decrypt(string ciphertext, bool rotDirection, int size, vector<int> cutouts){
+    if (!validateCutouts(cutouts, size)) {
+        throw runtime_error("La llave no es valida");
     }
+    
+    string cleartext(size*size, PLACEHOLDER);
     int i = 0;
     int j = 0;
     while (i < ciphertext.size()) {  // realizar para todas las letras del texto claro
-        if ((i % holes.size() == 0) && i!=0){           // rotar cada 4 iteraciones
-            holes = rotate(holes, rotDirection, size);   // rotar la matriz = cambiar los huecos
-            cout << "Matriz rotada, nuevos huecos en ";
-            printVector(holes);
+        if ((i % cutouts.size() == 0) && i!=0){           // rotar cada 4 iteraciones
+            rotate(cutouts, rotDirection, size);   // rotar la matriz = cambiar los huecos
+            // cout << "Matriz rotada, nuevos huecos en ";
+            // printVector(cutouts);
             //cout << i << endl;
-            j = 0;                  // resetear posicion inicial para holes
+            j = 0;                  // resetear posicion inicial para cutouts
         }
-        if (holes[j] > ciphertext.size()) {
-            cleartext[i] = 'x';
-            //throw std::runtime_error("Texto cifrado muy corto");
-            // Uno de los huecos de la matriz no tiene letras debajo 
-        } else {
-            cleartext[i] = ciphertext.at(holes[j]); // quiza sea necesario hacer una verificacion apra esto
-        }
-        printArr(cleartext, size*size+1);
+        cleartext[i] = ciphertext.at(cutouts[j]); // quiza sea necesario hacer una verificacion apra esto
+        // printArr(cleartext, size*size+1);
         i++;
         j++;
     }    
@@ -110,18 +127,46 @@ string decrypt(string ciphertext, bool rotDirection, int size, vector<int> holes
 }
 
 int main() {
-    cout << "Prueba 1: " << endl;
-    vector<int> huecos = {0, 9, 11, 14}; // si se empiezan a contar los huecos desde la posicion 0
-    string texto = encrypt("texto", LEFT, 4, huecos);
-    cout << "El texto encriptado es: " + texto << endl;
-    texto = decrypt(texto, LEFT, 4, huecos);
+
+    vector<int> huecos = {0, 9, 11, 14}; // si se empiezan a contar los huecos desde la posicion 0;
+    string texto;
+    string encriptado;
+
+    cout << string(40, '#') << "  PRUEBA 1  " << string(40, '#') << endl;
+    texto = "Jim attacks at dawn";
+    cout << "Texto original es: " << texto << endl;
+    encriptado = encrypt(texto, LEFT, 4, huecos);
+    cout << "El texto encriptado es: " + encriptado << endl;
+    texto = decrypt(encriptado, LEFT, 4, huecos);
+    cout << "El texto claro es: " + texto << endl;
+
+    cout << endl << string(40, '#') << "  PRUEBA 2  " << string(40, '#') << endl;
+    texto = "texto";
+    cout << "Texto original es: " << texto << endl;
+    encriptado = encrypt(texto, LEFT, 4, huecos);
+    cout << "El texto encriptado es: " + encriptado << endl;
+    texto = decrypt(encriptado, LEFT, 4, huecos);
     cout << "El texto claro es: " + texto << endl;
     
-    cout << string(20, '#') << endl << "Prueba 2: " << endl;
-    huecos = {0, 3, 5, 11, 17, 19, 24, 29, 31, 34, 40, 42, 44, 48, 52, 54, 59, 64, 67, 71, 74}; // si se empiezan a contar los huecos desde la posicion 0
-    texto = encrypt("this is a message that i am encrypting with a turning grille to provide this illustrative example", LEFT, 4, huecos);
-    cout << "El texto encriptado es: " + texto << endl;
-    texto = decrypt(texto, LEFT, 4, huecos);
+    cout << endl << string(40, '#') << "  PRUEBA 3  " << string(40, '#') << endl;
+    huecos = {0,1,2,5,13,17,28,31,33,34,42,43,48,52,54,60,62,69,73,77,81,84,91,92,95}; // si se empiezan a contar los huecos desde la posicion 0
+    texto = "this is a message that i am encrypting with a turning grille to provide this illustrative example";
+    cout << "Texto original es: " << texto << endl;
+    encriptado = encrypt(texto, LEFT, 10, huecos);
+    cout << "El texto encriptado es: " + encriptado << endl;
+    texto = decrypt(encriptado, LEFT, 10, huecos);
     cout << "El texto claro es: " + texto << endl;
+    
+    cout << endl << string(40, '#') << "  PRUEBA 4  " << string(40, '#') << endl;
+    huecos = {0, 3, 5, 11, 17, 19, 24, 29, 31, 34, 40, 42, 44, 48, 52, 54, 59, 64, 67, 71, 74}; // si se empiezan a contar los huecos desde la posicion 0
+    texto = "this is a message that i am encrypting with a turning grille to provide this illustrative example";
+    cout << "Texto original es: " << texto << endl;
+    encriptado = encrypt(texto, LEFT, 9, huecos);
+    cout << "El texto encriptado es: " + encriptado << endl;
+    texto = decrypt(encriptado, LEFT, 9, huecos);
+    cout << "El texto claro es: " + texto << endl;
+    
+
+    
     return 0;
-}
+}    
