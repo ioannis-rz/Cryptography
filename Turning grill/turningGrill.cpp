@@ -77,7 +77,7 @@ string encrypt(string cleartext, bool rotDirection, int size, vector<int> cutout
             j = 0;                  // resetear posicion inicial para cutouts
         }
         // colocar en posicion del texto cifrado (cutouts) el caracter del texto claro
-        ciphertext[cutouts[j]] = cleartext.at(i); // quiza sea necesario hacer una verificacion apra esto
+        ciphertext[cutouts[j]] = cleartext.at(i);
         i++;
         j++;
     }
@@ -99,7 +99,7 @@ string decrypt(string ciphertext, bool rotDirection, int size, vector<int> cutou
             // printVector(cutouts);
             j = 0;                  // resetear posicion inicial para cutouts
         }
-        cleartext[i] = ciphertext.at(cutouts[j]); // quiza sea necesario hacer una verificacion apra esto
+        cleartext[i] = ciphertext.at(cutouts[j]);
         i++;
         j++;
     }    
@@ -128,7 +128,7 @@ int main() {
     cout << "El texto claro es: " + texto << endl;
     
     cout << endl << string(40, '#') << "  PRUEBA 3  " << string(40, '#') << endl;
-    huecos = {0,1,2,5,13,17,28,31,33,34,42,43,48,52,54,60,62,69,73,77,81,84,91,92,95}; // si se empiezan a contar los huecos desde la posicion 0
+    huecos = {0,1,2,5,13,17,28,31,33,34,42,43,48,52,54,60,62,69,73,77,81,84,91,92,95};
     texto = "this is a message that i am encrypting with a turning grille to provide this illustrative example";
     cout << "Texto original es: " << texto << endl;
     encriptado = encrypt(texto, LEFT, 10, huecos);
@@ -137,7 +137,7 @@ int main() {
     cout << "El texto claro es: " + texto << endl;
     
     cout << endl << string(40, '#') << "  PRUEBA 4  " << string(40, '#') << endl;
-    huecos = {0, 3, 5, 11, 17, 19, 24, 29, 31, 34, 40, 42, 44, 48, 52, 54, 59, 64, 67, 71, 74}; // si se empiezan a contar los huecos desde la posicion 0
+    huecos = {0, 3, 5, 11, 17, 19, 24, 29, 31, 34, 40, 42, 44, 48, 52, 54, 59, 64, 67, 71, 74};
     texto = "this is a message that i am encrypting with a turning grille to provide this illustrative example";
     cout << "Texto original es: " << texto << endl;
     encriptado = encrypt(texto, LEFT, 9, huecos);
