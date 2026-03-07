@@ -9,22 +9,6 @@ constexpr bool RIGHT = false;
 constexpr char PLACEHOLDER = '#';
 
 template <typename T>
-void print2DArr(T* ptr, int sizeRow, int sizeCol) {
-    for (int i = 0; i < sizeRow; i++) {
-        for (int j = 0; j < sizeCol; j++) {
-            cout << *(ptr+((i*sizeCol)+j)) << " ";
-        }
-        cout << endl;
-    }
-}
-template <typename T>
-void printArr(T* ptr, int size) {
-    for (int j = 0; j < size; j++) {
-        cout << *(ptr+j) << " ";
-    }
-    cout << endl; 
-}
-template <typename T>
 void printVector(const vector<T>& vector1) {
     for (T item : vector1) {
         cout << item << " ";
@@ -90,12 +74,10 @@ string encrypt(string cleartext, bool rotDirection, int size, vector<int> cutout
             rotate(cutouts, rotDirection, size);   // rotar la matriz = cambiar los huecos
             //cout << "Matriz rotada, nuevos huecos en ";
             //printVector(cutouts);
-            //cout << i << endl;
             j = 0;                  // resetear posicion inicial para cutouts
         }
         // colocar en posicion del texto cifrado (cutouts) el caracter del texto claro
         ciphertext[cutouts[j]] = cleartext.at(i); // quiza sea necesario hacer una verificacion apra esto
-        //printArr(ciphertext, size*size+1);
         i++;
         j++;
     }
@@ -115,11 +97,9 @@ string decrypt(string ciphertext, bool rotDirection, int size, vector<int> cutou
             rotate(cutouts, rotDirection, size);   // rotar la matriz = cambiar los huecos
             // cout << "Matriz rotada, nuevos huecos en ";
             // printVector(cutouts);
-            //cout << i << endl;
             j = 0;                  // resetear posicion inicial para cutouts
         }
         cleartext[i] = ciphertext.at(cutouts[j]); // quiza sea necesario hacer una verificacion apra esto
-        // printArr(cleartext, size*size+1);
         i++;
         j++;
     }    
@@ -127,7 +107,6 @@ string decrypt(string ciphertext, bool rotDirection, int size, vector<int> cutou
 }
 
 int main() {
-
     vector<int> huecos = {0, 9, 11, 14}; // si se empiezan a contar los huecos desde la posicion 0;
     string texto;
     string encriptado;
@@ -165,8 +144,6 @@ int main() {
     cout << "El texto encriptado es: " + encriptado << endl;
     texto = decrypt(encriptado, LEFT, 9, huecos);
     cout << "El texto claro es: " + texto << endl;
-    
-
     
     return 0;
 }    

@@ -24,8 +24,8 @@ class Caesar:
       cleartext.append(chr(temp))
     return ''.join(cleartext)
 
-cipher = Caesar(13)
-test = cipher.encrypt("return to rome as soon as possible")
+cipher = Caesar(4)
+test = cipher.encrypt("see you in two long weeks")
 print(test)
 test = cipher.decrypt(test)
 print(test)
