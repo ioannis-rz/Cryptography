@@ -121,5 +121,9 @@ int main()
     cleartext = decrypt(ciphertext, key, t);
     cout << "Cleartext: " << cleartext << endl;
 
+    cleartext = "jornada de ciberseguridad un";
+    key = "covid";
+    ciphertext = encrypt(cleartext, key);
+    cout << "Ciphertext: " << ciphertext << endl;
     return 0;
 }

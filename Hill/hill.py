@@ -70,9 +70,12 @@ def inverseModular(matrix: np.array, mod: int):
     mat = adj(matrix)
     return (mat * eeaResult[1]) % mod
 
-test2 = np.array([[11,8],[3,7]])
-text = "JULY"
-cipher = encryptHill(test2, text)
-cleartext = decryptHill(test2, cipher)
-print("Ciphertext: " + cipher)
-print("Cleartext: " + cleartext)
+#test2 = np.array([[11,8],[3,7]])
+#text = "JULY"
+#cipher = encryptHill(test2, text)
+#cleartext = decryptHill(test2, cipher)
+#print("Ciphertext: " + cipher)
+#print("Cleartext: " + cleartext)
+
+
+print(eea(81,37))
