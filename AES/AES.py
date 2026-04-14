@@ -83,7 +83,7 @@ if __name__ == "__main__":
    with open(enc_file_path2, "wb") as f:
       f.write(ciphertext_b64)
    print("Image saved to", enc_file_path2)
-   print("Printing Base64")
+   print("Printing 2nd image in base64")
    print(ciphertext_b64)
 
    # open file backl
